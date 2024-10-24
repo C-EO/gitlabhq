@@ -1124,6 +1124,8 @@ Use **GitLab.com** to refer to the URL or product offering. GitLab.com is the in
 Use **GitLab Workflow extension for VS Code** to refer to the extension.
 You can also use **GitLab Workflow for VS Code** or **GitLab Workflow**.
 
+For terms in VS Code, see [VS Code user interface](#vs-code-user-interface)
+
 ## group access token
 
 Use sentence case for **group access token**.
@@ -1503,6 +1505,15 @@ When writing about the Minimal Access role:
 Do not use bold.
 
 Do not use **Minimal Access permissions**. A user who is assigned the Minimal Access role has a set of associated permissions.
+
+## model registry
+
+When documenting the GitLab model registry features and functionality, use lowercase.
+
+Use:
+
+- The GitLab model registry supports A, B, and C.
+- You can publish a model to your project's model registry.
 
 ## n/a, N/A, not applicable
 
@@ -2396,6 +2407,12 @@ Pay attention to spacing by the letter **v**. In semantic versioning, no space e
 
 Do not use Latin abbreviations. Use **with**, **through**, or **by using** instead. ([Vale](../testing/vale.md) rule: [`LatinTerms.yml`](https://gitlab.com/gitlab-org/gitlab/-/blob/master/doc/.vale/gitlab_base/LatinTerms.yml))
 
+## VS Code user interface
+
+When describing the user interface of VS Code and the Web IDE, follow the usage and capitalization of the
+[VS Code documentation](https://code.visualstudio.com/docs/getstarted/userinterface), such as Command Palette
+and Primary Side Bar.
+
 ## Vulnerability Explanation
 
 Use title case for **Vulnerability Explanation**.
@@ -2421,6 +2438,10 @@ Use:
 Instead of:
 
 - We created a feature for you to add widgets.
+
+## Web IDE user interface
+
+See [VS Code user interface](#vs-code-user-interface).
 
 ## workaround
 

@@ -4953,17 +4953,6 @@ RSpec.describe User, feature_category: :user_profile do
 
     it { is_expected.to contain_exactly private_group, child_group, project_group, project_group_parent }
 
-    context 'when fix_user_authorized_groups is disabled' do
-      before do
-        stub_feature_flags(fix_user_authorized_groups: false)
-      end
-
-      it 'omits ancestor groups of projects' do
-        is_expected.to include project_group
-        is_expected.not_to include project_group_parent
-      end
-    end
-
     context 'with shared memberships' do
       let_it_be(:shared_group) { create(:group) }
       let_it_be(:shared_group_descendant) { create(:group, parent: shared_group) }
@@ -4978,17 +4967,6 @@ RSpec.describe User, feature_category: :user_profile do
 
       it { is_expected.to include shared_group, shared_group_descendant }
       it { is_expected.not_to include other_group, shared_with_project_group }
-
-      context 'when fix_user_authorized_groups is disabled' do
-        before do
-          stub_feature_flags(fix_user_authorized_groups: false)
-        end
-
-        it 'omits subgroups of shared groups' do
-          is_expected.to include shared_group
-          is_expected.not_to include shared_group_descendant
-        end
-      end
     end
 
     context 'when a new column is added to namespaces table' do
@@ -8836,12 +8814,19 @@ RSpec.describe User, feature_category: :user_profile do
 
   context 'normalized email reuse check' do
     let(:error_message) { 'Email is not allowed. Please enter a different email address and try again.' }
+    let(:new_user) { build(:user, email: tumbled_email) }
 
-    subject(:new_user) { build(:user, email: tumbled_email).tap(&:valid?) }
+    subject(:validate) { new_user.validate }
 
-    shared_examples 'adds a validation error' do
+    shared_examples 'adds a validation error' do |reason|
       specify do
-        subject
+        expect(::Gitlab::AppLogger).to receive(:info).with(
+          message: 'Email failed validation check',
+          reason: reason,
+          username: new_user.username
+        )
+
+        validate
 
         expect(new_user.errors.full_messages).to include(error_message)
       end
@@ -8857,7 +8842,7 @@ RSpec.describe User, feature_category: :user_profile do
           create(:user, email: tumbled_email.split('@').join('1@'))
         end
 
-        it_behaves_like 'adds a validation error'
+        it_behaves_like 'adds a validation error', 'Detumbled email has reached the reuse limit'
 
         it 'performs the normalized email limit check' do
           expect(Email).to receive(:users_by_detumbled_email_count).and_call_original
@@ -8873,12 +8858,16 @@ RSpec.describe User, feature_category: :user_profile do
         end
 
         it 'does not add an error' do
+          validate
+
           expect(new_user.errors).to be_empty
         end
       end
 
       context 'when the normalized email limit has not been reached' do
         it 'does not add an error' do
+          validate
+
           expect(new_user.errors).to be_empty
         end
       end
@@ -8897,7 +8886,7 @@ RSpec.describe User, feature_category: :user_profile do
     end
 
     context 'when email has other validation errors' do
-      subject(:new_user) { build(:user, email: 'invalid-email').tap(&:valid?) }
+      subject { build(:user, email: 'invalid-email').tap(&:valid?) }
 
       it 'does not perform the normalized email checks' do
         expect(::Users::BannedUser).not_to receive(:by_detumbled_email)
@@ -8927,7 +8916,7 @@ RSpec.describe User, feature_category: :user_profile do
           create(:user, :banned, email: normalized_email)
         end
 
-        it_behaves_like 'adds a validation error'
+        it_behaves_like 'adds a validation error', 'Detumbled email is associated with a banned user'
 
         it 'performs the banned user check' do
           expect(::Users::BannedUser).to receive(:by_detumbled_email).and_call_original
@@ -8945,6 +8934,8 @@ RSpec.describe User, feature_category: :user_profile do
           let(:tumbled_email) { 'unique+tumbled@email.com' }
 
           it 'does not add an error' do
+            validate
+
             expect(new_user.errors).to be_empty
           end
         end
@@ -8972,6 +8963,9 @@ RSpec.describe User, feature_category: :user_profile do
 
         it 'performs the check and does not add an error' do
           expect(::Users::BannedUser).to receive(:by_detumbled_email).and_call_original
+
+          validate
+
           expect(new_user.errors).to be_empty
         end
 

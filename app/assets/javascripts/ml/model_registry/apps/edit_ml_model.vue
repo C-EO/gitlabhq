@@ -13,8 +13,7 @@ export default {
     },
     canWriteModelRegistry: {
       type: Boolean,
-      required: false,
-      default: false,
+      required: true,
     },
     markdownPreviewPath: {
       type: String,

@@ -161,7 +161,6 @@ gem 'rack-cors', '~> 2.0.1', require: 'rack/cors' # rubocop:todo Gemfile/Missing
 # GraphQL API
 gem 'graphql', '~> 2.3.14', feature_category: :api
 gem 'graphql-docs', '~> 5.0.0', group: [:development, :test], feature_category: :api
-gem 'graphiql-rails', '~> 1.10', feature_category: :api
 gem 'apollo_upload_server', '~> 2.1.6', feature_category: :api
 gem 'graphlient', '~> 0.8.0', feature_category: :importers # Used by BulkImport feature (group::import)
 
@@ -494,7 +493,7 @@ end
 group :development, :test do
   gem 'deprecation_toolkit', '~> 1.5.1', require: false # rubocop:todo Gemfile/MissingFeatureCategory
   gem 'bullet', '~> 7.1.2' # rubocop:todo Gemfile/MissingFeatureCategory
-  gem 'parser', '= 3.3.3.0', feature_category: :shared
+  gem 'parser', '= 3.3.5.0', feature_category: :shared
   gem 'pry-byebug' # rubocop:todo Gemfile/MissingFeatureCategory
   gem 'pry-rails', '~> 0.3.9' # rubocop:todo Gemfile/MissingFeatureCategory
   gem 'pry-shell', '~> 0.6.4' # rubocop:todo Gemfile/MissingFeatureCategory
@@ -594,7 +593,7 @@ group :test do
   # Moved in `test` because https://gitlab.com/gitlab-org/gitlab/-/issues/217527
   gem 'derailed_benchmarks', require: false # rubocop:todo Gemfile/MissingFeatureCategory
 
-  gem 'gitlab_quality-test_tooling', '~> 2.0.0', require: false, feature_category: :tooling
+  gem 'gitlab_quality-test_tooling', '~> 2.1.0', require: false, feature_category: :tooling
 end
 
 gem 'octokit', '~> 9.0', feature_category: :importers
